@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Task, Column, TaskStatus } from "./types";
 import { KanbanColumn } from "./kanban-column";
 import { TaskDialog, TaskFormValues } from "./task-dialog";
+import { assignees } from "@/lib/data";
 
 const columns: Column[] = [
   { id: "todo", title: "Todo" },
@@ -11,13 +12,7 @@ const columns: Column[] = [
   { id: "done", title: "Done" },
 ];
 
-const teamMembers = [
-  "Alice Johnson",
-  "Bob Smith",
-  "Charlie Brown",
-  "Diana Prince",
-  "Eva Martinez",
-];
+const teamMembers = assignees.map((a) => a.name);
 
 const initialTasks: Task[] = [
   {
