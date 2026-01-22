@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { assignees, getAssigneeByName } from "@/lib/data";
 import {
   Popover,
   PopoverContent,
@@ -56,13 +57,7 @@ const priorityConfig = {
   },
 };
 
-const defaultTeamMembers = [
-  "Alice Johnson",
-  "Bob Smith",
-  "Carol Williams",
-  "David Brown",
-  "Eva Martinez",
-];
+const defaultTeamMembers = assignees.map((a) => a.name);
 
 function getInitials(name: string): string {
   return name
@@ -165,6 +160,10 @@ export function TaskCard({
             {task.assignee ? (
               <>
                 <Avatar className="h-7 w-7 ring-2 ring-background">
+                  <AvatarImage
+                    src={getAssigneeByName(task.assignee)?.avatar}
+                    alt={task.assignee}
+                  />
                   <AvatarFallback
                     className={cn(
                       "text-[10px] font-semibold text-white",
@@ -228,23 +227,27 @@ export function TaskCard({
                         <span className="text-muted-foreground">Unassigned</span>
                       </div>
                     </SelectItem>
-                    {teamMembers.map((member) => (
-                      <SelectItem key={member} value={member}>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarFallback
-                              className={cn(
-                                "text-[10px] font-semibold text-white",
-                                getAvatarColor(member)
-                              )}
-                            >
-                              {getInitials(member)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>{member}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
+                    {teamMembers.map((member) => {
+                      const assignee = getAssigneeByName(member);
+                      return (
+                        <SelectItem key={member} value={member}>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage src={assignee?.avatar} alt={member} />
+                              <AvatarFallback
+                                className={cn(
+                                  "text-[10px] font-semibold text-white",
+                                  getAvatarColor(member)
+                                )}
+                              >
+                                {getInitials(member)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span>{member}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

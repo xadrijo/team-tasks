@@ -31,10 +31,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Task, TaskStatus } from "./types";
+import { assignees, getAssigneeByName } from "@/lib/data";
 
 // Zod validation schema
 const taskFormSchema = z.object({
@@ -60,13 +61,7 @@ interface TaskDialogProps {
   defaultStatus?: TaskStatus;
 }
 
-const defaultTeamMembers = [
-  "Alice Johnson",
-  "Bob Smith",
-  "Carol Williams",
-  "David Brown",
-  "Eva Martinez",
-];
+const defaultTeamMembers = assignees.map((a) => a.name);
 
 function getInitials(name: string): string {
   return name
@@ -225,23 +220,27 @@ export function TaskDialog({
                           </span>
                         </div>
                       </SelectItem>
-                      {teamMembers.map((member) => (
-                        <SelectItem key={member} value={member}>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarFallback
-                                className={cn(
-                                  "text-[10px] font-semibold text-white",
-                                  getAvatarColor(member)
-                                )}
-                              >
-                                {getInitials(member)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span>{member}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                      {teamMembers.map((member) => {
+                        const assignee = getAssigneeByName(member);
+                        return (
+                          <SelectItem key={member} value={member}>
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-6 w-6">
+                                <AvatarImage src={assignee?.avatar} alt={member} />
+                                <AvatarFallback
+                                  className={cn(
+                                    "text-[10px] font-semibold text-white",
+                                    getAvatarColor(member)
+                                  )}
+                                >
+                                  {getInitials(member)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{member}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   <FormMessage />
